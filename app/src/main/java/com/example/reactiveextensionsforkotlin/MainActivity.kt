@@ -7,10 +7,12 @@ import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.Transformations.map
 import com.example.reactiveextensionsforkotlin.databinding.ActivityMainBinding
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -22,9 +24,8 @@ class MainActivity : AppCompatActivity() {
 
         val observable = createButtonClickObservable()
         observable.subscribeOn(Schedulers.computation()).
-            map {
-                it.plus(it)
-            }
+            debounce(5L,TimeUnit.SECONDS)
+
             .subscribe {
                 binding.textView.text = it
             }
